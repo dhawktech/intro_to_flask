@@ -4,6 +4,8 @@ from app.forms import RegistrationForm, LoginForm
 from app.models import User
 from flask_login import login_user, logout_user
 
+# Made a small change somewhere
+
 # FLASK_LOGIN
 # .is_authenticated
 # .is_active
