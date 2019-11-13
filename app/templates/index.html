@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+
+{% block title %} {{ super() }} - Home {% endblock %}
+
+{% block content %}
+<h4>This is the home page</h4>
+<hr>
+
+{% for name in names %}
+  <h4>{{ name }}</h4>
+{% endfor %}
+
+{% endblock %}

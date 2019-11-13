@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block title %} {{ super() }} - About {% endblock %}
+
+{% block content %}
+  <h4>This is the about page</h4>
+  <hr>
+
+  {% if current_user.is_anonymous %}
+    <h4>Welcome, New User</h4>
+  {% else %}
+    <h4>My name is {{ current_user.email }}</h4>
+  {% endif %}
+{% endblock %}
