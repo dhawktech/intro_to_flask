@@ -6,7 +6,7 @@
   <h4>This is the register page</h4>
   <hr>
   <div class="col-md-6 offset-md-3">
-    <form action="{{ url_for('register') }}" method="GET">
+    <form action="{{ url_for('register') }}" method="POST">
       {{ form.hidden_tag() }}
       <div class="form-group">
         {{ form.name(class="form-control", placeholder="Name") }}

@@ -1,12 +1,12 @@
 {% extends 'layout.html' %}
 
-{% block title %} {{ super() }} - Home {% endblock %}
+{% block title %} {{ super() }} - Profile {% endblock %}
 
 {% block content %}
-<h4>This is the home page</h4>
+<h4>This is the profile page</h4>
 <hr />
 
-<form action="{{ url_for('index') }}" method="POST">
+<form action="{{ url_for('profile', name=current_user.name.lower()) }}" method="POST">
   {{ form.hidden_tag() }}
   <div class="form-group">
     {{ form.body(class="form-control", placeholder="Type status here...") }}
@@ -22,11 +22,14 @@
   {% for p in posts %}
     <p>
       {{ p.body }} | <small>{{ moment(p.timestamp).fromNow() }}</small> <br />
-      {#{{ p.body }} | <small>{{ p.timestamp.strftime('%A, %b %d, %Y @%-I:%M%p') }}</small> <br />#}
+      {#{ p.body }} | <small>{{ p.timestamp.strftime('%A, %b %d, %Y @%-I:%M%p') }}</small> <br />#}
       &mdash; {{ p.author.name }}
     </p>
+    <a class="btn btn-danger" href="{{ url_for('post_delete', id=p.id) }}">Delete</a>
     <hr />
   {% endfor %}
+{% else %}
+    <p>You have no posts... Make some!</p>
 {% endif %}
 
 {% endblock %}

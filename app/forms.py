@@ -14,3 +14,14 @@ class LoginForm(FlaskForm):
   password = PasswordField(validators=[DataRequired()])
   remember_me = BooleanField()
   submit = SubmitField(label="Login")
+
+class ProfileForm(FlaskForm):
+  name = StringField(validators=[DataRequired()])
+  email = StringField(validators=[DataRequired(), Email()])
+  password = PasswordField(validators=[DataRequired(), EqualTo('confirm_password')])
+  confirm_password = PasswordField(validators=[DataRequired()])
+  submit = SubmitField(label="Submit")
+
+class BlogForm(FlaskForm):
+  body = StringField(validators=[DataRequired()])
+  submit = SubmitField(label="Submit")

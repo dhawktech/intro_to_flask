@@ -1,8 +1,8 @@
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request
-from app.forms import RegistrationForm, LoginForm
-from app.models import User
-from flask_login import login_user, logout_user
+from app.forms import RegistrationForm, LoginForm, ProfileForm, BlogForm
+from app.models import User, Post
+from flask_login import login_user, logout_user, current_user, login_required
 
 # Made a small change somewhere
 
@@ -24,21 +24,44 @@ def getGlobal():
     g_username=""
   )
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
+  form = BlogForm()
   context = {
-    'names': ['Nicholas', "Peter", "Derek"]
+    'form': form,
+    'posts': Post.query.order_by(Post.timestamp.desc()).all()
   }
+  if form.validate_on_submit():
+    p = Post(body=form.body.data, user_id=current_user.id)
+    db.session.add(p)
+    db.session.commit()
+    flash("Post added successfully", 'success')
+    return redirect(url_for('index'))
   return render_template('index.html', **context)
 
 @app.route('/contact')
 def contact():
   return render_template('contact.html')
 
-@app.route('/about')
+@app.route('/about', methods=['GET', 'POST'])
+@login_required
 def about():
+  form = ProfileForm()
   context = {
+    'form': form
   }
+  if request.method == 'GET':
+    form.name.data = current_user.name
+    form.email.data = current_user.email
+  if form.validate_on_submit():
+    current_user.name = form.name.data
+    current_user.email = form.email.data
+    current_user.password = form.password.data
+    current_user.generate_password(current_user.password)
+    db.session.commit()
+    flash('Profile information updated successfully', 'success')
+    return redirect(url_for('about'))
   return render_template('about.html', **context)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -80,3 +103,27 @@ def register():
 def logout():
   logout_user()
   return redirect(url_for('login'))
+
+# /profile/
+@app.route('/profile/<name>', methods=['GET', 'POST'])
+def profile(name):
+  form = BlogForm()
+  if form.validate_on_submit():
+    p = Post(body=form.body.data, user_id=current_user.id)
+    db.session.add(p)
+    db.session.commit()
+    flash("Post added successfully", 'success')
+    return redirect(url_for('profile'))
+  context = {
+    'form': form,
+    'posts': Post.query.filter_by(user_id=current_user.id).order_by(Post.timestamp.desc()).all()
+  }
+  return render_template('profile.html', **context)
+
+@app.route('/post/delete/<int:id>')
+def post_delete(id):
+  p = Post.query.get(id)
+  db.session.delete(p)
+  db.session.commit()
+  flash("Post deleted successfully", "info")
+  return redirect(url_for('profile', id=current_user.id))
