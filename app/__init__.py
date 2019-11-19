@@ -22,7 +22,4 @@ login.login_view = 'login'
 from flask_moment import Moment
 moment = Moment(app)
 
-from flask_mail import Mail
-mail = Mail(app)
-
 from app import routes, models

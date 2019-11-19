@@ -1,8 +1,9 @@
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request
-from app.forms import RegistrationForm, LoginForm, ProfileForm, BlogForm
+from app.forms import RegistrationForm, LoginForm, ProfileForm, BlogForm, ContactForm
 from app.models import User, Post
 from flask_login import login_user, logout_user, current_user, login_required
+from app.email import send_email
 
 # Made a small change somewhere
 
@@ -40,9 +41,17 @@ def index():
     return redirect(url_for('index'))
   return render_template('index.html', **context)
 
-@app.route('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
-  return render_template('contact.html')
+  form = ContactForm()
+  context = {
+    'form': form
+  }
+  if form.validate_on_submit():
+    send_email()
+    flash("Your form submission was successful", "info")
+    return redirect(url_for('contact'))
+  return render_template('contact.html', **context)
 
 @app.route('/about', methods=['GET', 'POST'])
 @login_required
