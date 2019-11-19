@@ -136,3 +136,33 @@ def post_delete(id):
   db.session.commit()
   flash("Post deleted successfully", "info")
   return redirect(url_for('profile', id=current_user.id))
+
+@app.route('/users')
+def users():
+  context = {
+    'users': User.query.all(),
+    'following': current_user.followed.all()
+  }
+  return render_template('users.html', **context)
+
+@app.route('/users/add/<user>')
+def users_add(user):
+  user = User.query.filter_by(name=user).first()
+  print(user.name)
+  print(current_user.followed)
+  if user not in current_user.followed:
+    flash("User added successfully", "success")
+    current_user.follow(user)
+    return redirect(url_for('users'))
+  flash(f"You are already following {user.name}.", "warning")
+  return redirect(url_for('users'))
+
+@app.route('/users/remove/<user>')
+def users_remove(user):
+  user = User.query.filter_by(name=user).first()
+  if user in current_user.followed:
+    flash("User removed successfully", "success")
+    current_user.unfollow(user)
+    return redirect(url_for('users'))
+  flash(f"You cannot unfollow someone you're not following. Make it make sense, sis...", "warning")
+  return redirect(url_for('users'))
