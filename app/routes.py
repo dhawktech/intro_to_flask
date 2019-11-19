@@ -170,3 +170,11 @@ def users_remove(user):
     return redirect(url_for('users'))
   flash(f"You cannot unfollow someone you're not following. Make it make sense, sis...", "warning")
   return redirect(url_for('users'))
+
+@app.route('/users/delete/<user>')
+def users_delete(user):
+  user = User.query.get(current_user.id)
+  db.session.remove(user)
+  db.session.commit()
+  flash("User removed successfully. Sorry to see you go.", "danger")
+  return redirect('index')

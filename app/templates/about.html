@@ -3,13 +3,14 @@
 {% block title %} {{ super() }} - About {% endblock %}
 
 {% block content %}
-  <h4>This is the about page</h4>
-  <hr>
-
   {% if current_user.is_anonymous %}
     <h4>Welcome, New User</h4>
   {% else %}
-    <h4>My name is {{ current_user.email }}</h4>
+  <div class="clearfix">
+    <h4 class="float-left">My name is {{ current_user.name }}</h4>
+    <span class="float-right"><a href="{{ url_for('users_delete', user=current_user.name) }}" class="btn btn-danger">Delete Account</a></span>
+  </div>
+  <hr>
   {% endif %}
 
   <div class="col-md-6 offset-md-3">
