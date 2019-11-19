@@ -113,12 +113,14 @@ def register():
   return render_template('register.html', **context)
 
 @app.route('/logout')
+@login_required
 def logout():
   logout_user()
   return redirect(url_for('login'))
 
 # /profile/
 @app.route('/profile/<name>', methods=['GET', 'POST'])
+@login_required
 def profile(name):
   form = BlogForm()
   if form.validate_on_submit():
@@ -134,6 +136,7 @@ def profile(name):
   return render_template('profile.html', **context)
 
 @app.route('/post/delete/<int:id>')
+@login_required
 def post_delete(id):
   p = Post.query.get(id)
   db.session.delete(p)
@@ -142,6 +145,7 @@ def post_delete(id):
   return redirect(url_for('profile', id=current_user.id))
 
 @app.route('/users')
+@login_required
 def users():
   context = {
     'users': [i for i in User.query.all() if i.id != current_user.id],
@@ -150,6 +154,7 @@ def users():
   return render_template('users.html', **context)
 
 @app.route('/users/add/<user>')
+@login_required
 def users_add(user):
   user = User.query.filter_by(name=user).first()
   print(user.name)
@@ -162,6 +167,7 @@ def users_add(user):
   return redirect(url_for('users'))
 
 @app.route('/users/remove/<user>')
+@login_required
 def users_remove(user):
   user = User.query.filter_by(name=user).first()
   if user in current_user.followed:
@@ -172,9 +178,11 @@ def users_remove(user):
   return redirect(url_for('users'))
 
 @app.route('/users/delete/<user>')
+@login_required
 def users_delete(user):
   user = User.query.get(current_user.id)
-  db.session.remove(user)
+  db.session.delete(user)
   db.session.commit()
+  logout_user()
   flash("User removed successfully. Sorry to see you go.", "danger")
   return redirect('index')
