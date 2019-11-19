@@ -18,7 +18,6 @@ migrate = Migrate(app, db)
 from flask_login import LoginManager
 login = LoginManager(app)
 login.login_view = 'login'
-login.login_message_category = "info"
 
 from flask_moment import Moment
 moment = Moment(app)

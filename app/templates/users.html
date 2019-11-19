@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
 
-{% block title %} {{ super() }} - Home {% endblock %}
+{% block title %} {{ super() }} - Users {% endblock %}
 
 {% block content %}
-<h4>This is the home page</h4>
-<hr />
+<h4>This is the users page</h4>
+<hr>
 
 <div class="col-md-6 offset-md-3">
   <table class="table table-striped table-inverse">
@@ -12,14 +12,13 @@
         {% if users %}
           {% for u in users %}
             <tr>
-              <td>{{ u.name }}
-                <span class="float-right">
-                  {% if current_user.is_following(u) %}
-                    <a href="{{ url_for('users_remove', user=u) }}" class="btn btn-warning"> Unfollow - </a>
-                  {% else %}
-                    <a href="{{ url_for('users_add', user=u) }}" class="btn btn-warning"> Follow + </a>
-                  {% endif %}
-                </span>
+              <td>
+                {{ u }}
+                {% if current_user.is_following(u) %}
+                  <span class="float-right"><a href="{{ url_for('users_remove', user=u) }}" class="btn btn-warning"> Unfollow - </a></span>
+                {% else %}
+                  <span class="float-right"><a href="{{ url_for('users_add', user=u) }}" class="btn btn-success"> Follow + </a></span>
+                {% endif %}
               </td>
             </tr>
           {% endfor %}
@@ -27,5 +26,4 @@
       </tbody>
   </table>
 </div>
-
 {% endblock %}

@@ -33,7 +33,6 @@ def index():
     'form': form,
     'posts': current_user.followed_posts()
   }
-  print(current_user.followed.all())
   if form.validate_on_submit():
     p = Post(body=form.body.data, user_id=current_user.id)
     db.session.add(p)
@@ -76,8 +75,6 @@ def about():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-  if current_user.is_authenticated:
-    return redirect('about')
   form = LoginForm()
   if form.validate_on_submit():
     user = User.query.filter_by(email=form.email.data).first()
@@ -145,11 +142,9 @@ def post_delete(id):
   return redirect(url_for('profile', id=current_user.id))
 
 @app.route('/users')
-@login_required
 def users():
   context = {
     'users': [i for i in User.query.all() if i.id != current_user.id],
-    'following': current_user.followed.all()
   }
   return render_template('users.html', **context)
 
@@ -157,13 +152,11 @@ def users():
 @login_required
 def users_add(user):
   user = User.query.filter_by(name=user).first()
-  print(user.name)
-  print(current_user.followed)
   if user not in current_user.followed:
-    flash("User added successfully", "success")
     current_user.follow(user)
+    flash("User added successfully", "success")
     return redirect(url_for('users'))
-  flash(f"You are already following {user.name}.", "warning")
+  flash(f"You are already following {user.name}", "warning")
   return redirect(url_for('users'))
 
 @app.route('/users/remove/<user>')
@@ -171,18 +164,17 @@ def users_add(user):
 def users_remove(user):
   user = User.query.filter_by(name=user).first()
   if user in current_user.followed:
-    flash("User removed successfully", "success")
     current_user.unfollow(user)
+    flash("User removed successfully", "info")
     return redirect(url_for('users'))
-  flash(f"You cannot unfollow someone you're not following. Make it make sense, sis...", "warning")
+  flash("You cannot unfollow someone you're not following. Make it make sense, sis...", "danger")
   return redirect(url_for('users'))
 
 @app.route('/users/delete/<user>')
 @login_required
 def users_delete(user):
-  user = User.query.get(current_user.id)
+  user = current_user
   db.session.delete(user)
   db.session.commit()
-  logout_user()
-  flash("User removed successfully. Sorry to see you go.", "danger")
-  return redirect('index')
+  flash("Your account was deleted successfully. Sorry to see you go.", "info")
+  return redirect(url_for('index'))
