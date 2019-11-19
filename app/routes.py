@@ -31,8 +31,9 @@ def index():
   form = BlogForm()
   context = {
     'form': form,
-    'posts': Post.query.order_by(Post.timestamp.desc()).all()
+    'posts': current_user.followed_posts()
   }
+  print(current_user.followed.all())
   if form.validate_on_submit():
     p = Post(body=form.body.data, user_id=current_user.id)
     db.session.add(p)
@@ -75,6 +76,8 @@ def about():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+  if current_user.is_authenticated:
+    return redirect('about')
   form = LoginForm()
   if form.validate_on_submit():
     user = User.query.filter_by(email=form.email.data).first()
@@ -101,6 +104,7 @@ def register():
     u.generate_password(u.password)
     db.session.add(u)
     db.session.commit()
+    login_user(u)
     flash("You have registered successfully", "info")
     return redirect(url_for('login'))
   context = {
@@ -140,7 +144,7 @@ def post_delete(id):
 @app.route('/users')
 def users():
   context = {
-    'users': User.query.all(),
+    'users': [i for i in User.query.all() if i.id != current_user.id],
     'following': current_user.followed.all()
   }
   return render_template('users.html', **context)

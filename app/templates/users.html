@@ -4,12 +4,6 @@
 
 {% block content %}
 <h4>This is the home page</h4>
-<h6>You are following:</h6>
-{% if following %}
-  {% for f in following %}
-    <p>{{ f }}</p>
-  {% endfor %}
-{% endif %}
 <hr />
 
 <div class="col-md-6 offset-md-3">
