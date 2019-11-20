@@ -1,16 +1,13 @@
 {% extends 'layout.html' %}
 
-{% block title %} {{ super() }} - Register {% endblock %}
+{% block title %} {{ super() }} - Login {% endblock %}
 
 {% block content %}
-  <h4>This is the register page</h4>
+  <h4>This is the login page</h4>
   <hr>
   <div class="col-md-6 offset-md-3">
-    <form action="{{ url_for('register') }}" method="POST">
+    <form action="{{ url_for('account.login') }}" method="POST">
       {{ form.hidden_tag() }}
-      <div class="form-group">
-        {{ form.name(class="form-control", placeholder="Name") }}
-      </div>
       <div class="form-group">
         {{ form.email(class="form-control", placeholder="Email") }}
       </div>
@@ -18,12 +15,18 @@
         {{ form.password(class="form-control", placeholder="Password") }}
       </div>
       <div class="form-group">
-        {{ form.confirm_password(class="form-control", placeholder="Confirm Password") }}
+        <div class="form-check">
+          <label class="form-check-label">
+            {{ form.remember_me(class="form-check-input") }}
+            Remember Me
+          </label>
+        </div>
       </div>
       <div class="form-group">
         {{ form.submit(class="btn btn-outline-success btn-block") }}
       </div>
     </form>
   </div>
+
   
 {% endblock %}

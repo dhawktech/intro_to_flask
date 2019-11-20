@@ -1,6 +1,6 @@
-from app import app, db
-from flask import render_template, redirect, url_for, flash, request
-from app.forms import RegistrationForm, LoginForm, ProfileForm, BlogForm, ContactForm
+from app import db
+from flask import current_app, render_template, redirect, url_for, flash, request
+from app.forms import ProfileForm, BlogForm, ContactForm
 from app.models import User, Post
 from flask_login import login_user, logout_user, current_user, login_required
 from app.email import send_email
@@ -20,13 +20,13 @@ import requests, json
 # U - UPDATE: PUT
 # D - DELETE: DELETE
 
-@app.context_processor
+@current_app.context_processor
 def getGlobal():
   return dict(
     g_username=""
   )
 
-@app.route('/', methods=['GET', 'POST'])
+@current_app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
   form = BlogForm()
@@ -42,7 +42,7 @@ def index():
     return redirect(url_for('index'))
   return render_template('index.html', **context)
 
-@app.route('/contact', methods=['GET', 'POST'])
+@current_app.route('/contact', methods=['GET', 'POST'])
 def contact():
   form = ContactForm()
   context = {
@@ -54,7 +54,7 @@ def contact():
     return redirect(url_for('contact'))
   return render_template('contact.html', **context)
 
-@app.route('/about', methods=['GET', 'POST'])
+@current_app.route('/about', methods=['GET', 'POST'])
 @login_required
 def about():
   form = ProfileForm()
@@ -74,50 +74,8 @@ def about():
     return redirect(url_for('about'))
   return render_template('about.html', **context)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-  form = LoginForm()
-  if form.validate_on_submit():
-    user = User.query.filter_by(email=form.email.data).first()
-    if user is None or not user.check_password(form.password.data):
-      flash("Incorrect email or password. Try again.", "danger")
-      return redirect(url_for('login'))
-    login_user(user, remember=form.remember_me.data)
-    flash("You have logged in successfully", "success")
-    return redirect(url_for('about'))
-  context = {
-    'form': form
-  }
-  return render_template('login.html', **context)
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-  form = RegistrationForm()
-  if form.validate_on_submit():
-    u = User(
-      name=form.name.data,
-      email=form.email.data,
-      password=form.password.data
-    )
-    u.generate_password(u.password)
-    db.session.add(u)
-    db.session.commit()
-    login_user(u)
-    flash("You have registered successfully", "info")
-    return redirect(url_for('login'))
-  context = {
-    'form': form
-  }
-  return render_template('register.html', **context)
-
-@app.route('/logout')
-@login_required
-def logout():
-  logout_user()
-  return redirect(url_for('login'))
-
 # /profile/
-@app.route('/profile/<name>', methods=['GET', 'POST'])
+@current_app.route('/profile/<name>', methods=['GET', 'POST'])
 @login_required
 def profile(name):
   form = BlogForm()
@@ -133,7 +91,7 @@ def profile(name):
   }
   return render_template('profile.html', **context)
 
-@app.route('/post/delete/<int:id>')
+@current_app.route('/post/delete/<int:id>')
 @login_required
 def post_delete(id):
   p = Post.query.get(id)
@@ -142,14 +100,14 @@ def post_delete(id):
   flash("Post deleted successfully", "info")
   return redirect(url_for('profile', id=current_user.id))
 
-@app.route('/users')
+@current_app.route('/users')
 def users():
   context = {
     'users': [i for i in User.query.all() if i.id != current_user.id],
   }
   return render_template('users.html', **context)
 
-@app.route('/users/add/<user>')
+@current_app.route('/users/add/<user>')
 @login_required
 def users_add(user):
   user = User.query.filter_by(name=user).first()
@@ -160,7 +118,7 @@ def users_add(user):
   flash(f"You are already following {user.name}", "warning")
   return redirect(url_for('users'))
 
-@app.route('/users/remove/<user>')
+@current_app.route('/users/remove/<user>')
 @login_required
 def users_remove(user):
   user = User.query.filter_by(name=user).first()
@@ -171,7 +129,7 @@ def users_remove(user):
   flash("You cannot unfollow someone you're not following. Make it make sense, sis...", "danger")
   return redirect(url_for('users'))
 
-@app.route('/users/delete/<user>')
+@current_app.route('/users/delete/<user>')
 @login_required
 def users_delete(user):
   user = current_user
@@ -180,7 +138,7 @@ def users_delete(user):
   flash("Your account was deleted successfully. Sorry to see you go.", "info")
   return redirect(url_for('index'))
 
-@app.route('/racers')
+@current_app.route('/racers')
 def racers():
   response = requests.get('https://ergast.com/api/f1/2019/20/driverStandings.json')
   data = response.json()['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
