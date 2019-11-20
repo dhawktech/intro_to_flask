@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block title %} {{ super() }} - F1 Racer API {% endblock %}
+
+{% block content %}
+<h4>This is the racers page</h4>
+<hr />
+<div class="col-md-8 offset-md-2">
+  <table class="table table-striped table-inverse">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Position</th>
+        <th>Name</th>
+        <th>Nationality</th>
+        <th>Constructor</th>
+        <th>Points</th>
+        <th>Wins</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in data %}
+        <tr>
+          <td>{{ i.position }}</td>
+          <td><a href="{{ i.Driver.url }}">{{ "{} {}".format(i.Driver.givenName, i.Driver.familyName) }}</a></td>
+          <td>{{ i.Driver.nationality }}</td>
+          <td><a href="{{ i.Constructors[0].url }}">{{ i.Constructors[0].name }}</a></td>
+          <td>{{ i.points }}</td>
+          <td>{{ i.wins }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

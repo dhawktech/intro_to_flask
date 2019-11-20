@@ -3,8 +3,10 @@ import os
 
 app = Flask(__name__)
 
-from config import ProductionConfig, DevelopmentConfig
-if os.environ['FLASK_ENV'] == 'development':
+from config import ProductionConfig, DevelopmentConfig, TestConfig
+if os.environ['FLASK_ENV'] == 'testing':
+  app.config.from_object(TestConfig)
+elif os.environ['FLASK_ENV'] == 'development':
   app.config.from_object(DevelopmentConfig)
 elif os.environ['FLASK_ENV'] == 'production':
   app.config.from_object(ProductionConfig)
@@ -18,6 +20,7 @@ migrate = Migrate(app, db)
 from flask_login import LoginManager
 login = LoginManager(app)
 login.login_view = 'login'
+login.login_message_category = 'info'
 
 from flask_moment import Moment
 moment = Moment(app)
