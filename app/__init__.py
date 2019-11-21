@@ -21,7 +21,14 @@ moment = Moment()
 def create_app(config_class=Config):
   app = Flask(__name__)
   if os.environ['FLASK_ENV'] == 'development':
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
+    FLASK_DEBUG=1
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+  elif os.environ['FLASK_ENV'] == 'production':
+    FLASK_DEBUG=0
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///'
+  elif os.environ['FLASK_ENV'] == 'test':
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///'
   app.config.from_object(config_class)
 
   db.init_app(app)
@@ -37,6 +44,6 @@ def create_app(config_class=Config):
   app.register_blueprint(apis_bp, url_prefix='/apis')
 
   with app.app_context():
-    from app import routes, models
+    from app import routes, errors
 
   return app

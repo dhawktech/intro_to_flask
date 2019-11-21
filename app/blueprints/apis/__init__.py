@@ -50,7 +50,6 @@ def weather():
   data = None
   unit = None
   if form.validate_on_submit():
-    print(form.units.data)
     if form.units.data == 0:
       unit = "°F"
     elif form.units.data == 1:
