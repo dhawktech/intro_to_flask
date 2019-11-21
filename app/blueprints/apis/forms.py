@@ -5,5 +5,10 @@ from wtforms.validators import DataRequired
 class ErgastForm(FlaskForm):
   year = StringField(validators=[DataRequired()])
   season = StringField(validators=[DataRequired()])
-  # temp = SelectField(coerce=int, choices=[(0, '-- select an option --'), (1, 'Fahrenheit'), (2, 'Celsius'), (3, 'Kelvin')], default=0)
+  submit = SubmitField('Submit')
+
+class WeatherForm(FlaskForm):
+  city = StringField(validators=[DataRequired()])
+  country = StringField(validators=[DataRequired()])
+  units = SelectField(coerce=int, choices=[(0, 'Imperial'), (1, 'Metric'), (2, 'Kelvin')], default=0)
   submit = SubmitField('Submit')

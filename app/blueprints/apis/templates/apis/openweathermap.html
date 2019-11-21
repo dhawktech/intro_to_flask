@@ -1,0 +1,86 @@
+{% extends 'layout.html' %}
+
+{% block title %} {{ super() }} - OpenWeatherMap API {% endblock %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('apis.static', filename='css/apis.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="col-md-4 form-container">
+  <form class="form-inline ergast-form" action="{{ url_for('apis.weather') }}" method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.city(class="form-control", placeholder="City") }}
+      {{ form.country(class="form-control", placeholder="Country") }}
+      {{ form.units(class="form-control") }}
+      {{ form.submit(class="btn btn-info") }}
+    </div>
+  </form>
+</div>
+<hr />
+<div class="col-md-6">
+  {% if message or not data %}
+    <p>{{ message }}</p>
+  {% else %}
+    <p>
+      <div>
+        <h3>
+          <span class="badge badge-default">City</span>
+          <span class="float-right badge badge-default">{{ data.name }}</span>
+        </h3>
+      </div>
+    </p>
+    <p>
+      <div>
+        <h3>
+          <span class="badge badge-default">Country</span>
+          <span class="float-right badge badge-default">{{ data.country }}</span>
+        </h3>
+      </div>
+    </p>
+    <p>
+      <div>
+        <h3>
+          <span class="badge badge-info">Current Temp</span>
+          <span class="float-right badge badge-default">{{ data.current }}{{ data.unit }}</span>
+        </h3>
+      </div>
+    </p>
+    <p>
+      <div>
+        <h3>
+          <span class="badge badge-light">Condition</span>
+          <span class="float-right badge badge-default">{{ data.condition }}</span>
+        </h3>
+      </div>
+    </p>
+    <p>
+      <div>
+        <h3>
+          <span class="badge badge-dark">Clouds</span>
+          <span class="float-right badge badge-default">{{ data.clouds }}&percnt;</span>
+        </h3>
+      </div>
+    </p>
+    <p>
+      <div>
+        <h3>
+          <span class="badge badge-warning">High Temp</span>
+          <span class="float-right badge badge-default">{{ data.high_temp }}{{ data.unit }}</span>
+        </h3>
+      </div>
+    </p>
+    <p>
+      <div>
+        <h3>
+          <span class="badge badge-primary">Low Temp</span>
+          <span class="float-right badge badge-default">{{ data.low_temp }}{{ data.unit }}</span>
+        </h3>
+      </div>
+    </p>
+  {% endif %}
+</div>
+
+{% endblock %}
