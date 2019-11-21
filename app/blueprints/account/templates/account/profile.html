@@ -6,7 +6,7 @@
 <h4>This is the profile page</h4>
 <hr />
 
-<form action="{{ url_for('profile', name=current_user.name.lower()) }}" method="POST">
+<form action="{{ url_for('account.profile', name=current_user.name.lower()) }}" method="POST">
   {{ form.hidden_tag() }}
   <div class="form-group">
     {{ form.body(class="form-control", placeholder="Type status here...") }}
@@ -25,7 +25,7 @@
       {#{ p.body }} | <small>{{ p.timestamp.strftime('%A, %b %d, %Y @%-I:%M%p') }}</small> <br />#}
       &mdash; {{ p.author.name }}
     </p>
-    <a class="btn btn-danger" href="{{ url_for('post_delete', id=p.id) }}">Delete</a>
+    <a class="btn btn-danger" href="{{ url_for('main.post_delete', id=p.id) }}">Delete</a>
     <hr />
   {% endfor %}
 {% else %}

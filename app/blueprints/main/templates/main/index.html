@@ -6,7 +6,7 @@
 <h4>This is the home page</h4>
 <hr />
 
-<form action="{{ url_for('index') }}" method="POST">
+<form action="{{ url_for('main.index') }}" method="POST">
   {{ form.hidden_tag() }}
   <div class="form-group">
     {{ form.body(class="form-control", placeholder="Type status here...") }}

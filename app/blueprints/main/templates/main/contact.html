@@ -6,7 +6,7 @@
 <h4>This is the contact page</h4>
 <hr>
 <div class="col-md-6 offset-md-3">
-  <form action="{{ url_for('contact') }}" method="POST">
+  <form action="{{ url_for('main.contact') }}" method="POST">
     {{ form.hidden_tag() }}
     <div class="form-group">
       {{ form.name(placeholder="Your name", class="form-control") }}

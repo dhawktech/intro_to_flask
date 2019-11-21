@@ -1,7 +1,7 @@
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-from app.forms import ContactForm
+from app.blueprints.main.forms import ContactForm
 from flask import render_template
 
 def send_email():

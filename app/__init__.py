@@ -37,11 +37,17 @@ def create_app(config_class=Config):
   login.init_app(app)
   moment.init_app(app)
 
-  from app.blueprints.account import bp as account_bp
-  app.register_blueprint(account_bp, url_prefix='/account')
+  from app.blueprints.users import users
+  app.register_blueprint(users, url_prefix='/users')
 
-  from app.blueprints.apis import bp as apis_bp
-  app.register_blueprint(apis_bp, url_prefix='/apis')
+  from app.blueprints.account import account
+  app.register_blueprint(account, url_prefix='/account')
+
+  from app.blueprints.apis import apis
+  app.register_blueprint(apis, url_prefix='/apis')
+
+  from app.blueprints.main import main
+  app.register_blueprint(main, url_prefix='/')
 
   with app.app_context():
     from app import routes, errors

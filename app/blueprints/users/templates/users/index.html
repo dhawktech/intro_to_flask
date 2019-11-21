@@ -15,9 +15,9 @@
               <td>
                 {{ u }}
                 {% if current_user.is_following(u) %}
-                  <span class="float-right"><a href="{{ url_for('users_remove', user=u) }}" class="btn btn-warning"> Unfollow - </a></span>
+                  <span class="float-right"><a href="{{ url_for('users.remove', user=u) }}" class="btn btn-warning"> Unfollow - </a></span>
                 {% else %}
-                  <span class="float-right"><a href="{{ url_for('users_add', user=u) }}" class="btn btn-success"> Follow + </a></span>
+                  <span class="float-right"><a href="{{ url_for('users.add', user=u) }}" class="btn btn-success"> Follow + </a></span>
                 {% endif %}
               </td>
             </tr>
