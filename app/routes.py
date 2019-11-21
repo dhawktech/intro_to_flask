@@ -137,9 +137,3 @@ def users_delete(user):
   db.session.commit()
   flash("Your account was deleted successfully. Sorry to see you go.", "info")
   return redirect(url_for('index'))
-
-@current_app.route('/racers')
-def racers():
-  response = requests.get('https://ergast.com/api/f1/2019/20/driverStandings.json')
-  data = response.json()['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
-  return render_template('racers.html', data=data)

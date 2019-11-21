@@ -9,14 +9,20 @@
         <a class="nav-link" href="{{ url_for('index') }}">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('racers') }}">F1 Racer API</a>
-      </li>
-      <li class="nav-item">
         <a class="nav-link" href="{{ url_for('about') }}">About</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
       </li>
+      {% if current_user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">APIs</a>
+          <div class="dropdown-menu" aria-labelledby="dropdownId">
+            <a class="dropdown-item" href="{{ url_for('apis.ergast') }}">Ergast</a>
+            <a class="dropdown-item" href="#">Weather</a>
+          </div>
+        </li>
+      {% endif %}
     </ul>
     <ul class="navbar-nav m1-auto">
       {% if current_user.is_authenticated %}
