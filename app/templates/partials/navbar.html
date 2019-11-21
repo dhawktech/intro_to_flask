@@ -1,3 +1,17 @@
+{% set navigation_bar = [
+  ('/', 'main.index', 'Home'),
+  ('/about', 'main.about', 'About'),
+  ('/contact', 'main.contact', 'Contact'),
+  ('/apis/ergast', 'apis.ergast', 'Ergast API'),
+  ('/apis/weather', 'apis.weather', 'OpenWeatherMap API'),
+  ('/users', 'users.index', 'Users'),
+  ('/users/logout', 'account.logout', 'Logout'),
+  ('/users/login', 'account.login', 'Login'),
+  ('/users/register', 'account.register', 'Register'),
+] -%}
+
+{% set active_page = active_page|default('main.index') -%}
+
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
   <a class="navbar-brand" href="/">Navbar</a>
   <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
@@ -5,17 +19,13 @@
   </button>
   <div class="collapse navbar-collapse" id="collapsibleNavId">
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-      <li class="nav-item active">
-        <a class="nav-link" href="{{ url_for('main.index') }}">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a>
-      </li>
+      {% for url, route, label in navigation_bar[:3] %}
+        <li class="nav-item {{ 'active' if active_page==route }}">
+          <a class="nav-link" href="{{ url }}">{{ label }}</a>
+        </li>
+      {% endfor %}
       {% if current_user.is_authenticated %}
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown {{ 'active' if active_page=='apis.ergast' or active_page=='apis.weather' }}">
           <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">APIs</a>
           <div class="dropdown-menu" aria-labelledby="dropdownId">
             <a class="dropdown-item" href="{{ url_for('apis.ergast') }}">Ergast</a>
@@ -26,20 +36,20 @@
     </ul>
     <ul class="navbar-nav m1-auto">
       {% if current_user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('users.index') }}">Users</a>
-        </li>
-        <li class="nav-item">
+        <li class="nav-item {{ 'active' if active_page=='account.profile' }}">
           <a class="nav-link" href="{{ url_for('account.profile', name=current_user.name.lower()) }}">Profile</a>
+        </li>
+        <li class="nav-item {{ 'active' if active_page=='users.index' }}">
+          <a class="nav-link" href="{{ url_for('users.index') }}">Users</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('account.logout') }}">Logout</a>
         </li>
       {% else %}
-        <li class="nav-item">
+        <li class="nav-item {{ 'active' if active_page=='account.login' }}">
           <a class="nav-link" href="{{ url_for('account.login') }}">Login</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item {{ 'active' if active_page=='account.register' }}">
           <a class="nav-link" href="{{ url_for('account.register') }}">Register</a>
         </li>
       {% endif %}

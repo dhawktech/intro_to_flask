@@ -2,6 +2,8 @@
 
 {% block title %} {{ super() }} - OpenWeatherMap API {% endblock %}
 
+{% set active_page="apis.ergast" %}
+
 {% block styles %}
   {{ super() }}
   <link rel="stylesheet" href="{{ url_for('apis.static', filename='css/apis.css') }}">
