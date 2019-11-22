@@ -50,6 +50,6 @@ def create_app(config_class=Config):
   app.register_blueprint(main, url_prefix='/')
 
   with app.app_context():
-    from app import routes, errors
+    from app import routes, errors, cli
 
   return app
