@@ -37,6 +37,9 @@ def create_app(config_class=Config):
   login.init_app(app)
   moment.init_app(app)
 
+  from app.blueprints.projects import projects
+  app.register_blueprint(projects, url_prefix='/projects')
+
   from app.blueprints.users import users
   app.register_blueprint(users, url_prefix='/users')
 
@@ -44,10 +47,11 @@ def create_app(config_class=Config):
   app.register_blueprint(account, url_prefix='/account')
 
   from app.blueprints.apis import apis
-  app.register_blueprint(apis, url_prefix='/apis')
 
+  app.register_blueprint(apis, url_prefix='/apis')
   from app.blueprints.main import main
   app.register_blueprint(main, url_prefix='/')
+
 
   with app.app_context():
     from app import routes, errors, cli

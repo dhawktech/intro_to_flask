@@ -4,6 +4,9 @@
   ('/contact', 'main.contact', 'Contact'),
   ('/apis/ergast', 'apis.ergast', 'Ergast API'),
   ('/apis/weather', 'apis.weather', 'OpenWeatherMap API'),
+  ('/projects/ecommerce', 'projects.ecommerce', 'E-Commerce'),
+  ('/projects/databases', 'projects.databases', 'Databases'),
+  ('/projects/automation', 'projects.automation', 'Automation'),
   ('/users', 'users.index', 'Users'),
   ('/users/logout', 'account.logout', 'Logout'),
   ('/users/login', 'account.login', 'Login'),
@@ -32,12 +35,12 @@
             <a class="dropdown-item" href="{{ url_for('apis.weather') }}">OpenWeatherMap</a>
           </div>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown {{ 'active' if active_page=='projects.ecommerce' or active_page=='projects.databases' or active_page=='projects.automation' }}">
           <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects</a>
           <div class="dropdown-menu" aria-labelledby="dropdownId">
-            <a class="dropdown-item" href="">E-Commerce</a>
-            <a class="dropdown-item" href="">MySQL</a>
-            <a class="dropdown-item" href="">Web Scraping</a>
+            <a class="dropdown-item" href="{{ url_for('projects.ecommerce') }}">E-Commerce</a>
+            <a class="dropdown-item" href="{{ url_for('projects.databases') }}">Databases</a>
+            <a class="dropdown-item" href="{{ url_for('projects.automation') }}">Automation</a>
           </div>
         </li>
       {% endif %}
