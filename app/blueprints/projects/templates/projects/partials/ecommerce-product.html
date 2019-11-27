@@ -1,0 +1,34 @@
+<div class="modal fade" id="productModal_{{ p.id }}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <img src="{{ p.image }}" alt="{{ p.name }}" class="img-fluid">
+        <p>
+          <h4>
+            {{ p.name }}
+            <span class="float-right">${{ p.price }}</span>
+          </h4>
+        </p>
+        <p>Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet.</p>
+        <form class="form-inline product-form" action="{{ url_for('projects.ecommerceCartProductAdd', product=p.name ) }}" method="POST">
+          {{ productForm.hidden_tag() }}
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-6" style="padding: 0 5px 0 0;">
+                {{ productForm.quantity(style="min-width: 100%; text-align-last:center; text-align:center;", class="form-control") }}
+              </div>
+              <div class="col-md-6" style="padding: 0 0 0 5px;">
+                {{ productForm.submit(style="min-width: 100%;", type="submit", class="form-control btn btn-primary float-right") }}
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

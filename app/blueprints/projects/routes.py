@@ -1,10 +1,10 @@
 from flask import render_template, redirect, url_for, flash, session
 from app.blueprints.projects import projects
 from flask_login import login_required
-from app.blueprints.projects.forms import AutomationForm
+from app.blueprints.projects.forms import AutomationForm, ProductForm
 from app.blueprints.projects.connection import connection, populate_form_from_database
 import math, statistics, mysql.connector, os, stripe
-from app.blueprints.projects.stripe import stripeProductsList, convert_price
+from app.blueprints.projects.stripe import initProducts, convert_price
 
 @projects.route('/automation', methods=['GET', 'POST'])
 @login_required
@@ -58,13 +58,21 @@ def automation():
 @projects.route('/ecommerce')
 @login_required
 def ecommerce():
+  productForm = ProductForm()
+  productForm.quantity.choices.extend([(i, i) for i in range(1, 100)])
   try:
     if not session['cart']:
+      initProducts()
       pass
   except:
     session['cart'] = list()
+  if productForm.validate_on_submit():
+    print('It works')
+    flash("Item added to the cart")
+    return redirect(url_for('projects.ecommerce'))
   context = {
-    'products': stripeProductsList
+    'products': initProducts(),
+    'productForm': productForm
   }
   return render_template('projects/ecommerce.html', **context)
 
@@ -80,8 +88,9 @@ def ecommerceCart():
       i['quantity'] = session['cart'].count(i)
   except:
     session['cart'] = list()
+    initProducts()
   context = {
-    'products': stripeProductsList,
+    'products': initProducts(),
     'cart': session['cart'],
     'shallowCart': shallowCart,
     'grandTotal': round(sum([i['price'] for i in session['cart']]), 2),
@@ -89,7 +98,7 @@ def ecommerceCart():
   }
   return render_template('projects/ecommerce-cart.html', **context)
 
-@projects.route('/ecommerce/cart/add/product/<id>')
+@projects.route('/ecommerce/cart/add/product/<id>', methods=['GET', 'POST'])
 @login_required
 def ecommerceCartAdd(id):
   p = stripe.SKU.retrieve(id)
@@ -113,7 +122,33 @@ def ecommerceCartClear():
   else:
     flash("You cannot clear items from a cart you don't have.", "warning")
   return redirect(url_for('projects.ecommerceCart'))
-  
+
+@projects.route('/ecommerce/cart/remove/<id>')
+@login_required
+def ecommerceCartRemove(id):
+  product = stripe.SKU.retrieve(id)
+  try:
+    for i in session['cart']:
+      if product['id'] == i['id']:
+        session['cart'].remove(i)
+        flash(f"You have removed {product.attributes.name}.", "info")
+        break
+  except:
+    flash(f"{product.attributes.name} could not be removed", "warning")
+  return redirect(url_for('projects.ecommerceCart'))
+
+@projects.route('/ecommerce/cart/product/add/<product>', methods=['POST'])
+@login_required
+def ecommerceCartProductAdd(product):
+  form = ProductForm()
+  if form.submit():
+    for i in initProducts():
+      if product == i['name']:
+        session['cart'].extend([i] * form.quantity.data)
+        break
+    flash(f"You've added {form.quantity.data} {product}(s) to your cart.", "info")
+  return redirect(url_for('projects.ecommerce'))
+
 @projects.route('/databases')
 @login_required
 def databases():

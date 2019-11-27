@@ -66,3 +66,7 @@
 table#cart {
   margin-top: 1.5rem;
 }
+
+.product-form option {
+  text-indent: 10px;
+}

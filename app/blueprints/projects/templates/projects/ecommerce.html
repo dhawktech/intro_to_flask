@@ -10,22 +10,30 @@
 {% set active_page="projects.ecommerce" %}
 
 {% block content %}
-  <h4>
-    This is the ecommerce page
-    <span class="float-right"><a href="{{ url_for('projects.ecommerceCart') }}" class="btn btn-primary">Show cart</a></span>
-  </h4>
-
-  <hr>
+  <div class="clearfix">
+    <h4>
+      This is the ecommerce page
+      <span class="float-right"><a href="{{ url_for('projects.ecommerceCart') }}" class="btn btn-primary">Show cart</a></span>
+    </h4>
+    
+    <hr>
+  </div>
   <div class="row">
     {% for p in products %}
       <div class="col-md-4">
         <figure class="card card-product">
+
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-link" data-toggle="modal" data-target="#productModal_{{ p.id }}"><i class="fa fa-search-plus"></i> Quick view</button>
+          <!-- Modal -->
+          {% include 'projects/partials/ecommerce-product.html' %}
+
           <div class="img-wrap">
-            <img class="img-fluid" src="{{ p.image }}">
-            <a class="btn-overlay" href="#"><i class="fa fa-search-plus"></i> Quick view</a>
+            <img class="img-fluid" src="{{ p.image }}" />
+            <!-- <a class="btn-overlay" href="#"><i class="fa fa-search-plus"></i> Quick view</a> -->
           </div>
           <figcaption class="info-wrap">
-            <h6 class="title text-dots"><a href="#">{{ p.name }}</a></h6>
+            <h6 class="title text-dots"><a href="#" data-toggle="modal" data-target="#productModal_{{ p.id }}">{{ p.name }}</a></h6>
             <div class="action-wrap">
               <a href="{{ url_for('projects.ecommerceCartAdd', id=p.id) }}" class="btn btn-primary btn-sm float-right"> Add to cart </a>
               <div class="price-wrap h5">
