@@ -2,8 +2,10 @@ from flask import render_template, redirect, url_for, flash, session
 from app.blueprints.projects import projects
 from flask_login import login_required
 from app.blueprints.projects.forms import AutomationForm
-from app.blueprints.projects.connection import connection
+from app.blueprints.projects.connection import connection, populate_form_from_database
 import math, statistics, mysql.connector, os
+from app.blueprints.projects.stripe import stripe, products, convert_price, getUSD
+from decimal import Decimal
 
 @projects.route('/automation', methods=['GET', 'POST'])
 @login_required
@@ -14,12 +16,8 @@ def automation():
   if form.database.data is None:
     # print("form.database.data is:", "Unefined")
     conn = connection()
-    cur = conn.cursor()
-    cur.execute('SHOW DATABASES')
-    choices = cur.fetchall()
-    form.database.choices.extend(list(zip(list([i[0].decode('utf-8') for i in choices].index(i)+1 for i in [i[0].decode('utf-8') for i in choices]), [i[0].decode('utf-8').title() for i in choices])))
+    populate_form_from_database(conn, 'databases', form.database)
     session['databases_choices'] = form.database.choices
-    cur.close()
     context = {
       'form': form,
       'label': 'Search Database',
@@ -29,16 +27,8 @@ def automation():
     # print("form.database.data is:", "Defined")
     form.database.data = session['database'] # set database choice to last selected database from previous redirect
     conn = connection(session['databases_choices'][form.database.data][1].lower())
-    cur = conn.cursor()
-    cur.execute('SHOW DATABASES')
-    choices = cur.fetchall()
-    form.database.choices.extend(list(zip(list([i[0].decode('utf-8') for i in choices].index(i)+1 for i in [i[0].decode('utf-8') for i in choices]), [i[0].decode('utf-8').title() for i in choices])))
-    cur.close()
-    cur = conn.cursor()
-    cur.execute('SHOW TABLES')
-    choices = cur.fetchall()
-    form.table.choices.extend(list(zip(list([i[0].decode('utf-8') for i in choices].index(i)+1 for i in [i[0].decode('utf-8') for i in choices]), [i[0].decode('utf-8').title() for i in choices])))
-    cur.close()
+    populate_form_from_database(conn, 'databases', form.database)
+    populate_form_from_database(conn, 'tables', form.table)
     if form.validate_on_submit():
       if not form.table.choices:
         flash("Must select a valid option. Try again", "warning")
@@ -69,12 +59,56 @@ def automation():
 @projects.route('/ecommerce')
 @login_required
 def ecommerce():
-  context = {}
+  try:
+    if session['cart']:
+      pass
+  except:
+    session['cart'] = list()
+  context = {
+    'products': products
+  }
   return render_template('projects/ecommerce.html', **context)
+
+@projects.route('/ecommerce/cart')
+@login_required
+def ecommerceCart():
+  try:
+    cart = []
+    for i in session['cart']:
+      if i not in cart:
+        cart.append(i)
+  except:
+    session['cart'] = list()
+  context = {
+    'cart': cart,
+    'trueCart': session['cart'],
+    'convert_price': convert_price,
+    'grandTotal': getUSD(convert_price(getUSD(sum([i['price'] for i in session['cart']]))) + convert_price(getUSD(sum([i['price'] for i in session['cart']]))))
+  }
+  return render_template('projects/ecommerce_cart.html', **context)
+
+@projects.route('/ecommerce/cart/add/product/<product>')
+@login_required
+def ecommerceCartAdd(product):
+  product = stripe.SKU.retrieve(product)
+  session['cart'].append(product)
+  flash("Item added to cart.", "info")
+  return redirect(url_for('projects.ecommerce'))
+
+@projects.route('/ecommerce/cart/clear')
+@login_required
+def ecommerceCartClear():
+  if len(session['cart']) > 0:
+    session['cart'] = list()
+    flash("All items removed from your cart.", "warning")
+  else:
+    flash("You currently have no items in your cart to begin with.", "info")
+  return redirect(url_for('projects.ecommerceCart'))
 
 @projects.route('/databases')
 @login_required
 def databases():
-  context = {}
+  context = {
+  }
   return render_template('projects/databases.html', **context)
 

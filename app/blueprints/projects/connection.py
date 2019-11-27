@@ -9,9 +9,9 @@ def connection(db_name=None):
     port=os.environ.get('MYSQL_PORT')
   )
 
-def get_from_database(db, item, form):
+def populate_form_from_database(db, strObj, formDbObj):
   cur = db.cursor()
-  cur.execute(f'SHOW {item}')
+  cur.execute(f'SHOW {strObj.upper()}')
   choices = cur.fetchall()
-  form.database.choices.extend(list(zip(list([i[0].decode('utf-8') for i in choices].index(i)+1 for i in [i[0].decode('utf-8') for i in choices]), [i[0].decode('utf-8').title() for i in choices])))
+  formDbObj.choices.extend(list(zip(list([i[0].decode('utf-8') for i in choices].index(i)+1 for i in [i[0].decode('utf-8') for i in choices]), [i[0].decode('utf-8').title() for i in choices])))
   cur.close()
