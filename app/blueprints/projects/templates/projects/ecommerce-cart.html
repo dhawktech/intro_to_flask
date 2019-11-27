@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block title %} {{ super() }} - E-commerce Cart {% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('projects.static', filename='css/projects.css') }}">
+{% endblock %}
+
+{% set active_page="projects.ecommerceCart" %}
+
+{% block content %}
+  <h4>
+    This is the e-commerce cart page
+    <span class="float-right"><a {% if cart %}href="{{ url_for('projects.ecommerceCartClear') }}"{% endif %} class="btn btn-danger">Clear cart</a></span>
+  </h4>
+  
+  {% if not cart %}
+    <p>You have no items in the cart.</p>
+    <hr>
+  {% else %}
+    <table id="cart" class="table table-hover table-condensed">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th class="text-center">Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in shallowCart %}
+          <tr>
+            <td data-th="Product">
+              <div class="row">
+                <div class="col-sm-2 hidden-xs"><img src="{{ p.image }}" alt="{{ p.name }}" class="img-fluid" /></div>
+                <div class="col-sm-10">
+                  <h4 class="nomargin">{{ p.name }}</h4>
+                  <p>Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet.</p>
+                </div>
+              </div>
+            </td>
+            <td data-th="Price">${{ p.price }}</td>
+            <td data-th="Quantity">x{{ p.quantity }}</td>
+            <td data-th="Subtotal" class="text-center">${{ round(p.price * p.quantity, 2) }}</td>
+            <td class="actions" data-th="">
+              <button class="btn btn-danger btn-sm">Remove</button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td><a href="{{ url_for('projects.ecommerce') }}" class="btn btn-warning"><i class="fa fa-angle-left"></i> Continue Shopping</a></td>
+          <td colspan="2" class="hidden-xs"></td>
+          <td class="hidden-xs text-center"><strong>${{ grandTotal }}</strong></td>
+          <td><a href="#" class="btn btn-success btn-block">Checkout <i class="fa fa-angle-right"></i></a></td>
+        </tr>
+      </tfoot>
+    </table>
+  {% endif %}
+
+{% endblock %}

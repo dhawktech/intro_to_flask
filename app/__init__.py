@@ -52,7 +52,6 @@ def create_app(config_class=Config):
   from app.blueprints.main import main
   app.register_blueprint(main, url_prefix='/')
 
-
   with app.app_context():
     from app import routes, errors, cli
 

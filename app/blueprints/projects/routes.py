@@ -3,9 +3,8 @@ from app.blueprints.projects import projects
 from flask_login import login_required
 from app.blueprints.projects.forms import AutomationForm
 from app.blueprints.projects.connection import connection, populate_form_from_database
-import math, statistics, mysql.connector, os
-from app.blueprints.projects.stripe import stripe, products, convert_price, getUSD
-from decimal import Decimal
+import math, statistics, mysql.connector, os, stripe
+from app.blueprints.projects.stripe import stripeProductsList, convert_price
 
 @projects.route('/automation', methods=['GET', 'POST'])
 @login_required
@@ -60,12 +59,12 @@ def automation():
 @login_required
 def ecommerce():
   try:
-    if session['cart']:
+    if not session['cart']:
       pass
   except:
     session['cart'] = list()
   context = {
-    'products': products
+    'products': stripeProductsList
   }
   return render_template('projects/ecommerce.html', **context)
 
@@ -73,42 +72,51 @@ def ecommerce():
 @login_required
 def ecommerceCart():
   try:
-    cart = []
+    shallowCart = []
     for i in session['cart']:
-      if i not in cart:
-        cart.append(i)
+      if i not in shallowCart:
+        shallowCart.append(i)
+    for i in shallowCart:
+      i['quantity'] = session['cart'].count(i)
   except:
     session['cart'] = list()
   context = {
-    'cart': cart,
-    'trueCart': session['cart'],
-    'convert_price': convert_price,
-    'grandTotal': getUSD(convert_price(getUSD(sum([i['price'] for i in session['cart']]))) + convert_price(getUSD(sum([i['price'] for i in session['cart']]))))
+    'products': stripeProductsList,
+    'cart': session['cart'],
+    'shallowCart': shallowCart,
+    'grandTotal': round(sum([i['price'] for i in session['cart']]), 2),
+    'round': round
   }
-  return render_template('projects/ecommerce_cart.html', **context)
+  return render_template('projects/ecommerce-cart.html', **context)
 
-@projects.route('/ecommerce/cart/add/product/<product>')
+@projects.route('/ecommerce/cart/add/product/<id>')
 @login_required
-def ecommerceCartAdd(product):
-  product = stripe.SKU.retrieve(product)
+def ecommerceCartAdd(id):
+  p = stripe.SKU.retrieve(id)
+  product = dict(
+    id=p.id,
+    prod_id=p.product,
+    name=p.attributes.name,
+    image=p.image,
+    price=convert_price(p.price)
+  )
   session['cart'].append(product)
-  flash("Item added to cart.", "info")
+  flash(f"[{product['name']}] added to your shopping cart.", "info")
   return redirect(url_for('projects.ecommerce'))
 
 @projects.route('/ecommerce/cart/clear')
 @login_required
 def ecommerceCartClear():
-  if len(session['cart']) > 0:
+  if session['cart']:
     session['cart'] = list()
-    flash("All items removed from your cart.", "warning")
+    flash("You have cleared all items from your cart.", "info")
   else:
-    flash("You currently have no items in your cart to begin with.", "info")
+    flash("You cannot clear items from a cart you don't have.", "warning")
   return redirect(url_for('projects.ecommerceCart'))
-
+  
 @projects.route('/databases')
 @login_required
 def databases():
   context = {
   }
   return render_template('projects/databases.html', **context)
-

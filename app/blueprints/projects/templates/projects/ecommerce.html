@@ -11,31 +11,32 @@
 
 {% block content %}
   <h4>
-    This is the e-commerce page
-    <span class="float-right"><a href="{{ url_for('projects.ecommerceCart') }}" class="btn btn-primary">Show Cart</a></span>
+    This is the ecommerce page
+    <span class="float-right"><a href="{{ url_for('projects.ecommerceCart') }}" class="btn btn-primary">Show cart</a></span>
   </h4>
-  <hr>
-    <div class="row">
-      {% for p in products %}
-        <div class="col-md-4">
-          <figure class="card card-product">
-            <div class="img-wrap">
-              <img src="{{ p.image }}">
-              <a class="btn-overlay" href="#"><i class="fa fa-search-plus"></i> Quick view</a>
-            </div>
-            <figcaption class="info-wrap">
-              <h6 class="title text-dots"><a href="#">{{ p.name }}</a></h6>
-              <div class="action-wrap">
-                <a href="{{ url_for('projects.ecommerceCartAdd', product=p.id) }}" class="btn btn-primary btn-sm float-right"> Add to cart </a>
-                <div class="price-wrap h5">
-                  <span class="price-new">${{ p.price }}</span>
-                  <!-- <del class="price-old">$1980</del> -->
-                </div> <!-- price-wrap.// -->
-              </div> <!-- action-wrap -->
-            </figcaption>
-          </figure> <!-- card // -->
-        </div> <!-- col // -->
-      {% endfor %}
-  </div>
 
+  <hr>
+  <div class="row">
+    {% for p in products %}
+      <div class="col-md-4">
+        <figure class="card card-product">
+          <div class="img-wrap">
+            <img class="img-fluid" src="{{ p.image }}">
+            <a class="btn-overlay" href="#"><i class="fa fa-search-plus"></i> Quick view</a>
+          </div>
+          <figcaption class="info-wrap">
+            <h6 class="title text-dots"><a href="#">{{ p.name }}</a></h6>
+            <div class="action-wrap">
+              <a href="{{ url_for('projects.ecommerceCartAdd', id=p.id) }}" class="btn btn-primary btn-sm float-right"> Add to cart </a>
+              <div class="price-wrap h5">
+                <span class="price-new">${{ p.price }}</span>
+                <!-- <del class="price-old">$1980</del> -->
+              </div> <!-- price-wrap.// -->
+            </div> <!-- action-wrap -->
+          </figcaption>
+        </figure> <!-- card // -->
+      </div> <!-- col // -->
+    {% endfor %}
+  </div> <!-- row.// -->
+  
 {% endblock %}
